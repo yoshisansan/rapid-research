@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "ES2020",
+    "jsx": "react",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "strict": true,
+    "rootDirs": ["."],
+    "baseUrl": "src",
+    "paths": {
+      "@components/*": ["'src/components'/*"],
+      "@assets/*": ["./assets/*"]
+    },
+    "outDir": "./dist",
+    "lib": ["ES2020", "DOM"],
+    "typeRoots": ["types", "node_modules/@types"],
+    "types": ["chrome"]
+  },
+  "include": ["src/**/*", "types/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
