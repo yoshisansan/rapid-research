@@ -105,6 +105,25 @@ type InputSearchEngine = {
   value: string;
   index: number;
   handleKeyword: (val: string) => void;
+  keywordRef: React.MutableRefObject<string>;
+};
+
+const handleTab = async (tabIdx: number, searchEngineURL: string, inputKeyword: string) => {
+  // await chrome.tabs.create({
+  //   index: tabIdx + 1,
+  //   url: `${url}${keyword.replace(/(\s|[[:blank:]])+/g, '+')}`
+  // });
+  await chrome.tabs.query(
+    { active: true, currentWindow: true },
+    async (tabs: chrome.tabs.Tab[]) => {
+      if (tabs.length === 0 && tabs[0] === undefined) return;
+      const activeIndex = tabIdx;
+      chrome.tabs.create({
+        index: activeIndex + 1,
+        url: `${searchEngineURL}${inputKeyword}`
+      });
+    }
+  );
 };
 
 const InputSearchEngine: FC<InputSearchEngine> = (props) => {
@@ -137,28 +156,28 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
         e.preventDefault();
         logListener();
         const chromeMethods = new ChromeMethods();
-        chromeMethods.readChromeData().then((res: any) => {
+        chromeMethods.readChromeData().then(async (res: any) => {
           if (res !== null || res !== undefined) {
             if (chromeMethods.typeCheck(res[props.index])) {
-              const a = res[props.index].searchUrl;
-              const b = props.value.replace(/(\s|[[:blank:]])+/g, '+');
-              console.log(a, b);
-              const hoge = async () => {
-                await chrome.tabs.query(
-                  { active: true, currentWindow: true },
-                  async (tabs: chrome.tabs.Tab[]) => {
-                    if (tabs.length === 0 && tabs[0] === undefined) return;
-                    chrome.tabs.create({
-                      index: tabs[0].index + 1,
-                      url: `${res[props.index].searchUrl}${props.value.replace(
-                        /(\s|[[:blank:]])+/g,
-                        '+'
-                      )}`
-                    });
-                  }
-                );
-              };
-              hoge();
+              const searchEngineURL = res[props.index].searchUrl;
+              // const inputKeyword = props.getInputKeyword().replace(/(\s|[[:blank:]])+/g, '+');
+              // const inputKeyword = props.value.replace(/(\s|[[:blank:]])+/g, '+');
+              await chrome.tabs.query(
+                { active: true, currentWindow: true },
+                async (tabs: chrome.tabs.Tab[]) => {
+                  if (tabs.length === 0 && tabs[0] === undefined) return;
+                  const activeIndex = tabs[0].index;
+                  console.log(props.value);
+                  // await handleTab(tabs[0].index, res[props.index].searchUrl, props.value);
+                  chrome.tabs.create({
+                    index: activeIndex + 1,
+                    url: `${searchEngineURL}${props.keywordRef.current.replace(
+                      /(\s|[[:blank:]])+/g,
+                      '+'
+                    )}`
+                  });
+                }
+              );
             }
           }
         });
@@ -174,6 +193,8 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
         // });
       }
     };
+
+    // Ovservation Of Shortcut Keys.
     window.addEventListener('keydown', (e) => handler(e));
     return () => {
       window.removeEventListener('keydown', (e) => handler(e));
@@ -202,17 +223,17 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
                 />
               </FormLabel>
             </FormControl>
-            <a
-              href={`${props.searchUrl}${props.value.replace(/(\s|[[:blank:]])+/g, '+')}`}
-              target="_blank"
-              rel="noreferrer">
-              <IconButton
-                aria-label="Search database"
-                m="8px"
-                css={searchBtnCSS}
-                icon={<Search2Icon />}
-              />
-            </a>
+            <IconButton
+              onClick={async () => {
+                const { index, searchUrl, value } = props;
+                await handleTab(index, searchUrl, value);
+                console.log('click');
+              }}
+              aria-label="Search database"
+              m="8px"
+              css={searchBtnCSS}
+              icon={<Search2Icon />}
+            />
             <Box w="140px" p="8px">
               {`cmd + ${props.index + 1}`}
             </Box>

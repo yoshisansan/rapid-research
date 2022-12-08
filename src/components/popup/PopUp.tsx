@@ -1,4 +1,4 @@
-import React, { FC, useState, useTransition, Suspense, useEffect } from 'react';
+import React, { FC, useState, useRef, useEffect } from 'react';
 import { Box, VStack } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import Header from 'components/popup/header/Header';
@@ -17,6 +17,12 @@ const Main = styled.div`
 const PopUp: FC = () => {
   const [searchEngines, setSearchEngines] = useState<InputSearchData[] | null>(null);
   const [keyword, setKeyword] = useState('');
+  const keywordRef = useRef('');
+  keywordRef.current = keyword;
+  // const getInputKeyword = (): string => {
+  //   return (keywordRef.current = keyword);
+  // };
+  console.log(keyword);
   const handleKeyword = (val: string) => {
     setKeyword(val);
     if (searchEngines === null) return;
@@ -128,7 +134,12 @@ const PopUp: FC = () => {
                     {/*　ドラッグできる要素　*/}
                     {searchEngines.map((data, i) => (
                       <React.Fragment key={data.engineName}>
-                        <InputSearchEngine {...data} handleKeyword={handleKeyword} index={i} />
+                        <InputSearchEngine
+                          {...data}
+                          handleKeyword={handleKeyword}
+                          keywordRef={keywordRef}
+                          index={i}
+                        />
                       </React.Fragment>
                     ))}
                     {provided.placeholder}
