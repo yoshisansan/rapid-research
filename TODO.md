@@ -6,6 +6,7 @@ Project Description
 
 ### Todo
 
+- [ ] chrome拡張アプリ一覧ページでアプリを開けなくする  
 
 ### In Progress
 

@@ -26,7 +26,7 @@
       "js": ["/content.js"]
     }
   ],
-  "permissions": ["storage", "activeTab", "tabs", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": [],
   "action": {
     "default_popup": "/index.html",

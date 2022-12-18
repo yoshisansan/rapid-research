@@ -14,7 +14,7 @@ const Footer: FC = () => {
       bottom="0"
       backgroundImage="linear-gradient(to right, #DECBA4, #3E5151)">
       <Flex>
-        <Box color="white">Open Shortcut Key: </Box>
+        <Box color="white">Lunch Shortcut Key: </Box>
         <Box p="0 4px">
           <Box as="span" color="white" w="20px" h="20px" pr="4px">
             <FontAwesomeIcon icon={faApple} />
