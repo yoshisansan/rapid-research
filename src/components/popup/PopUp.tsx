@@ -1,17 +1,18 @@
-import React, { FC, useState, useRef, useEffect } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { Box, VStack } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import Header from 'components/popup/header/Header';
 import Footer from 'components/popup/footer/Footer';
 import InputSearchEngine from 'components/popup/btn/InputSearchEngine';
 import Source, { InputSearchData } from 'components/popup/data/searchEngine';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import type { DropResult, DroppableProvided, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import ChromeMethods from 'components/popup/api/chrome';
 import BrowserMethods from 'components/popup/api/browser';
 
 const Main = styled.div`
   padding-top: 72px;
+  margin-bottom: 36px;
   display: flex;
   justify-content: center;
 `;
@@ -19,11 +20,9 @@ const Main = styled.div`
 const PopUp: FC = () => {
   const [searchEngines, setSearchEngines] = useState<InputSearchData[] | null>(null);
   const [keyword, setKeyword] = useState('');
-  const keywordRef = useRef('');
-  keywordRef.current = keyword;
 
   const handleKeyword = (val: string) => {
-    setKeyword(val);
+    // setKeyword(val);
     if (searchEngines === null) return;
     const updateValue = searchEngines.map((data) => {
       return { ...data, value: val };
@@ -74,7 +73,7 @@ const PopUp: FC = () => {
     return tab.id;
   };
 
-  const getKeywordFromBrowser = async (tabId: number): Promise<string> => {
+  const getKeywordFromBrowser = async (tabId: number): Promise<string | null> => {
     const res = await chrome.scripting.executeScript({
       target: { tabId },
       func: () => {
@@ -99,43 +98,63 @@ const PopUp: FC = () => {
           ) as HTMLInputElement;
           return inputElm?.value;
         }
+        if (
+          /.+:\/\/(.+)?google\..*/.test(url) ||
+          /.+:\/\/(.+)?google\..*\..*/.test(url) ||
+          /.+:\/\/(.+)?scholar\.google\..*\..*/.test(url) ||
+          /.+:\/\/(.+)?scholar\.google\..*/.test(url) ||
+          /.+:\/\/(.+)?yandex\..*/.test(url)
+        ) {
+          const inputElm = document.querySelector('input[type="text"]') as HTMLInputElement;
+          return inputElm?.value;
+        }
 
-        const inputElm = document.querySelector('input[type="text"]') as HTMLInputElement;
-        return inputElm?.value;
+        return null;
       }
     });
-    const keyword = res[0].result;
-    return keyword;
+    const searchedKeyword = res[0].result;
+
+    return searchedKeyword;
   };
 
-  const fetchNewData = async () => {
+  const fetchNewData = async (): Promise<string> => {
     try {
-      if (chrome.storage.sync === undefined) return;
+      if (chrome.storage.sync === undefined) return 'COULD_NOT_SYNC';
       const chromeMethods = await new ChromeMethods();
       const res = (await chromeMethods.readChromeData()) as any;
       // 初期化時にDefaultDataをsetしているが初期化直後にstorageをgetしても値が更新されておらず値がundefinedのままに対する対処
-      if (res === null || res === undefined)
-        return setSearchEngines(chromeMethods.getDefaultData());
-      if (chromeMethods.typeCheck(res[0])) return setSearchEngines(res);
+      if (res === null || res === undefined) {
+        setSearchEngines(chromeMethods.getDefaultData());
+        return '';
+      }
+      if (chromeMethods.typeCheck(res[0])) {
+        setSearchEngines(res);
+        return res[0].value;
+      }
 
-      return setSearchEngines(Source);
+      setSearchEngines(Source);
+      return '';
     } catch (e: any) {
       throw new Error(e);
     }
   };
 
   useEffect(() => {
-    // let queryOptions = { active: true, currentWindow: true };
     (async () => {
-      fetchNewData();
+      const storageKeyword = await fetchNewData();
+      if (storageKeyword === 'COULD_NOT_SYNC') return;
+
       const tabId = await getBrowserId();
       const browserMethods = new BrowserMethods();
       if (tabId === undefined) return;
+
       const keyword = await getKeywordFromBrowser(tabId);
-      keywordRef.current = keyword;
+      if (keyword === null) return setKeyword(storageKeyword);
+
       const searchEngineData = await browserMethods.setSearchEngineKeyword(keyword);
       if (searchEngineData !== undefined && searchEngineData !== null) {
         await setSearchEngines(searchEngineData);
+      } else if (searchEngineData !== undefined && searchEngineData !== null) {
       } else {
         setSearchEngines(browserMethods.getDefaultData());
       }
@@ -159,12 +178,7 @@ const PopUp: FC = () => {
                     {/*　ドラッグできる要素　*/}
                     {searchEngines.map((data, i) => (
                       <React.Fragment key={data.engineName}>
-                        <InputSearchEngine
-                          {...data}
-                          handleKeyword={handleKeyword}
-                          keywordRef={keywordRef}
-                          index={i}
-                        />
+                        <InputSearchEngine {...data} handleKeyword={handleKeyword} index={i} />
                       </React.Fragment>
                     ))}
                     {provided.placeholder}

@@ -21,8 +21,7 @@
         "*://www.yandex.*/search/?text=*",
         "*://www.bing.*/search?q=*",
         "*://www.baidu.*/s?*",
-        "*://www.you.*/search?q=*",
-        "chrome-extension://*"
+        "*://www.you.*/search?q=*"
       ],
       "js": ["/content.js"]
     }

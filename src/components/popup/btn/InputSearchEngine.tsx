@@ -94,7 +94,6 @@ type InputSearchEngine = {
   value: string;
   index: number;
   handleKeyword: (val: string) => void;
-  keywordRef: React.MutableRefObject<string>;
 };
 
 const handleTab = async (searchEngineURL: string, inputKeyword: string) => {
@@ -174,7 +173,7 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
     return () => {
       window.removeEventListener('keydown', (e) => handler(e));
     };
-  }, [props.keywordRef.current]);
+  }, []);
 
   return (
     <Draggable key={props.engineName} draggableId={props.engineName} index={props.index}>
