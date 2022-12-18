@@ -108,7 +108,7 @@ type InputSearchEngine = {
   keywordRef: React.MutableRefObject<string>;
 };
 
-const handleTab = async (tabIdx: number, searchEngineURL: string, inputKeyword: string) => {
+const handleTab = async (searchEngineURL: string, inputKeyword: string) => {
   // await chrome.tabs.create({
   //   index: tabIdx + 1,
   //   url: `${url}${keyword.replace(/(\s|[[:blank:]])+/g, '+')}`
@@ -117,7 +117,7 @@ const handleTab = async (tabIdx: number, searchEngineURL: string, inputKeyword: 
     { active: true, currentWindow: true },
     async (tabs: chrome.tabs.Tab[]) => {
       if (tabs.length === 0 && tabs[0] === undefined) return;
-      const activeIndex = tabIdx;
+      const activeIndex = tabs[0].index;
       chrome.tabs.create({
         index: activeIndex + 1,
         url: `${searchEngineURL}${inputKeyword}`
@@ -127,14 +127,14 @@ const handleTab = async (tabIdx: number, searchEngineURL: string, inputKeyword: 
 };
 
 const InputSearchEngine: FC<InputSearchEngine> = (props) => {
-  const logListener = async () => {
-    try {
-      const tabs = await chrome.tabs.query({ active: true });
-      console.log(tabs);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const logListener = async () => {
+  //   try {
+  //     const tabs = await chrome.tabs.query({ active: true });
+  //     console.log(tabs);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const onChagngeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -150,47 +150,33 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
     ...draggableStyle
   });
 
+  const callChromeMethod = () => {
+    const chromeMethods = new ChromeMethods();
+    chromeMethods.readChromeData().then(async (res: any) => {
+      if (res !== null || res !== undefined) {
+        if (chromeMethods.typeCheck(res[props.index])) {
+          const searchEngineURL = res[props.index].searchUrl;
+          await chrome.tabs.query(
+            { active: true, currentWindow: true },
+            async (tabs: chrome.tabs.Tab[]) => {
+              if (tabs.length === 0 && tabs[0] === undefined) return;
+              const activeIndex = tabs[0].index;
+              chrome.tabs.create({
+                index: activeIndex + 1,
+                url: `${searchEngineURL}${props.value.replace(/(\s|[[:blank:]])+/g, '+')}`
+              });
+            }
+          );
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key == String(props.index + 1)) {
         e.preventDefault();
-        logListener();
-        const chromeMethods = new ChromeMethods();
-        chromeMethods.readChromeData().then(async (res: any) => {
-          if (res !== null || res !== undefined) {
-            if (chromeMethods.typeCheck(res[props.index])) {
-              const searchEngineURL = res[props.index].searchUrl;
-              // const inputKeyword = props.getInputKeyword().replace(/(\s|[[:blank:]])+/g, '+');
-              // const inputKeyword = props.value.replace(/(\s|[[:blank:]])+/g, '+');
-              await chrome.tabs.query(
-                { active: true, currentWindow: true },
-                async (tabs: chrome.tabs.Tab[]) => {
-                  if (tabs.length === 0 && tabs[0] === undefined) return;
-                  const activeIndex = tabs[0].index;
-                  console.log(props.value);
-                  // await handleTab(tabs[0].index, res[props.index].searchUrl, props.value);
-                  chrome.tabs.create({
-                    index: activeIndex + 1,
-                    url: `${searchEngineURL}${props.keywordRef.current.replace(
-                      /(\s|[[:blank:]])+/g,
-                      '+'
-                    )}`
-                  });
-                }
-              );
-            }
-          }
-        });
-        // 値を更新するためではなくaddEventListener宣言時の古いstate値が参照されるのでstate自身の関数の呼び出しで最新のstate値を取得するための処理
-        // setValue((value) => {
-        //   window.open(
-        //     `${props.searchUrl}${value.replace(/(\s|[[:blank:]])+/g, '+')}`,
-        //     '_blank',
-        //     'noreferrer'
-        //   );
-
-        //   return value;
-        // });
+        callChromeMethod();
       }
     };
 
@@ -199,7 +185,7 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
     return () => {
       window.removeEventListener('keydown', (e) => handler(e));
     };
-  }, []);
+  }, [props.keywordRef.current]);
 
   return (
     <Draggable key={props.engineName} draggableId={props.engineName} index={props.index}>
@@ -225,9 +211,8 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
             </FormControl>
             <IconButton
               onClick={async () => {
-                const { index, searchUrl, value } = props;
-                await handleTab(index, searchUrl, value);
-                console.log('click');
+                const { searchUrl, value } = props;
+                await handleTab(searchUrl, value);
               }}
               aria-label="Search database"
               m="8px"

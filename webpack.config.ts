@@ -77,8 +77,8 @@ const config: Configuration = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: './src/assets/earth-48px.png', to: './src/assets/' },
-        { from: './src/assets/earth-32px.png', to: './src/assets/' },
+        { from: './src/assets/Rapid-ReSearch-icon-32.png', to: './src/assets/' },
+        { from: './src/assets/Rapid-ReSearch-icon-48.png', to: './src/assets/' },
         { from: './manifest.json', to: './' }
       ]
     })

@@ -2,11 +2,13 @@ import React, { FC, useState, useRef, useEffect } from 'react';
 import { Box, VStack } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import Header from 'components/popup/header/Header';
+import Footer from 'components/popup/footer/Footer';
 import InputSearchEngine from 'components/popup/btn/InputSearchEngine';
 import Source, { InputSearchData } from 'components/popup/data/searchEngine';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import type { DropResult, DroppableProvided, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import ChromeMethods from 'components/popup/api/chrome';
+import BrowserMethods from 'components/popup/api/browser';
 
 const Main = styled.div`
   padding-top: 72px;
@@ -19,10 +21,7 @@ const PopUp: FC = () => {
   const [keyword, setKeyword] = useState('');
   const keywordRef = useRef('');
   keywordRef.current = keyword;
-  // const getInputKeyword = (): string => {
-  //   return (keywordRef.current = keyword);
-  // };
-  console.log(keyword);
+
   const handleKeyword = (val: string) => {
     setKeyword(val);
     if (searchEngines === null) return;
@@ -69,6 +68,46 @@ const PopUp: FC = () => {
     background: '#EBECF0'
   });
 
+  const getBrowserId = async (): Promise<number | undefined> => {
+    const queryOptions = { active: true, currentWindow: true };
+    const [tab] = await chrome.tabs.query(queryOptions);
+    return tab.id;
+  };
+
+  const getKeywordFromBrowser = async (tabId: number): Promise<string> => {
+    const res = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => {
+        const url = location.href;
+        if (/.+:\/\/(.+)?duckduckgo\..*/.test(url)) {
+          const inputElm = Array.from(
+            document.querySelectorAll('input[type="text"]')
+          )[1] as HTMLInputElement;
+          return inputElm?.value;
+        }
+        if (/.+:\/\/(.+)?bing\..*/.test(url)) {
+          const inputElm = document.querySelector('input[type="search"]') as HTMLInputElement;
+          return inputElm?.value;
+        }
+        if (/.+:\/\/(.+)?baidu\..*/.test(url)) {
+          const inputElm = document.querySelector('input#kw') as HTMLInputElement;
+          return inputElm?.value;
+        }
+        if (/.+:\/\/(.+)?you\..*/.test(url)) {
+          const inputElm = document.querySelector(
+            'input[data-testid="search-input"]'
+          ) as HTMLInputElement;
+          return inputElm?.value;
+        }
+
+        const inputElm = document.querySelector('input[type="text"]') as HTMLInputElement;
+        return inputElm?.value;
+      }
+    });
+    const keyword = res[0].result;
+    return keyword;
+  };
+
   const fetchNewData = async () => {
     try {
       if (chrome.storage.sync === undefined) return;
@@ -84,37 +123,36 @@ const PopUp: FC = () => {
       throw new Error(e);
     }
   };
-  useEffect(() => {
-    fetchNewData();
-    let queryOptions = { active: true, currentWindow: true };
-    (async () => {
-      let [tab] = await chrome.tabs.query(queryOptions);
-      const chromeMethods = await new ChromeMethods();
-      function handleSetKeyword() {
-        const search = document.getElementsByTagName('input')[0].value;
-        console.log(search);
-      }
-      if (tab.id === undefined) return;
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: handleSetKeyword
-      });
 
-      // await chrome.tabs.sendMessage(tab.id, 'hoge');
+  useEffect(() => {
+    // let queryOptions = { active: true, currentWindow: true };
+    (async () => {
+      fetchNewData();
+      const tabId = await getBrowserId();
+      const browserMethods = new BrowserMethods();
+      if (tabId === undefined) return;
+      const keyword = await getKeywordFromBrowser(tabId);
+      keywordRef.current = keyword;
+      console.log(keyword, 'keyword');
+      const searchEngineData = await browserMethods.setSearchEngineKeyword(keyword);
+      if (searchEngineData !== undefined && searchEngineData !== null) {
+        await setSearchEngines(searchEngineData);
+      } else {
+        setSearchEngines(browserMethods.getDefaultData());
+      }
     })();
 
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
-      // console.log(tabs[0].url);
-      // if(tabs.length === 0 && tabs[0].url === undefined) return;
-      // if(tabs[0].url.includes('https://www.chatwork.com')) {
-      //   alert('please go to https://www.chatwork.com')
-      //   return
-      // }
-      // console.log(tabs[0]);
-      // if (tabs[0].id === undefined) return;
-      // chrome.tabs.sendMessage(tabs[0].id, 'hoge');
-      // chrome.tabs.update(tabs[0].id, { url: `https://google.com/` });
-    });
+    // chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
+    // console.log(tabs[0].url);
+    // if(tabs.length === 0 && tabs[0].url === undefined) return;
+    // if(tabs[0].url.includes('https://www.chatwork.com')) {
+    //   alert('please go to https://www.chatwork.com')
+    //   return
+    // }
+    // console.log(tabs[0]);
+    // if (tabs[0].id === undefined) return;
+    // chrome.tabs.update(tabs[0].id, { url: `https://google.com/` });
+    // });
   }, []);
 
   return (
@@ -149,8 +187,8 @@ const PopUp: FC = () => {
             </DragDropContext>
           </VStack>
         )}
-        {/* <Dnd /> */}
       </Main>
+      <Footer />
     </Box>
   );
 };

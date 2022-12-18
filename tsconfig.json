@@ -20,6 +20,7 @@
     "typeRoots": ["types", "node_modules/@types"],
     "types": ["chrome"]
   },
+  "watch": true,
   "include": ["src/**/*", "types/**/*"],
   "exclude": ["node_modules", "dist"]
 }

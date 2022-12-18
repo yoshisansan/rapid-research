@@ -8,22 +8,37 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.google.com/search?*", "https://www.google.co.jp/search?*"],
+      "matches": ["*://*/*"],
+      "include_globs": [
+        "*://www.google.*/search?*",
+        "*://www.google.*.*/search?*",
+        "*://scholar.google.*.*/scholar?*",
+        "*://www.scholar.google.*.*/scholar?*",
+        "*://scholar.google.*/scholar?*",
+        "*://www.scholar.google.*/scholar?*",
+        "*://www.duckduckgo.*/?*",
+        "*://duckduckgo.*/?*",
+        "*://www.yandex.*/search/?text=*",
+        "*://www.bing.*/search?q=*",
+        "*://www.baidu.*/s?*",
+        "*://www.you.*/search?q=*",
+        "chrome-extension://*"
+      ],
       "js": ["/content.js"]
     }
   ],
-  "permissions": ["storage", "activeTab", "tabs", "scripting", "chrome://*"],
+  "permissions": ["storage", "activeTab", "tabs", "scripting"],
   "host_permissions": [],
   "action": {
     "default_popup": "/index.html",
     "default_icon": {
-      "32": "/src/assets/earth-32px.png",
-      "48": "/src/assets/earth-48px.png"
+      "32": "/src/assets/Rapid-ReSearch-icon-32.png",
+      "48": "/src/assets/Rapid-ReSearch-icon-48.png"
     }
   },
   "icons": {
-    "32": "/src/assets/earth-32px.png",
-    "48": "/src/assets/earth-48px.png"
+    "32": "/src/assets/Rapid-ReSearch-icon-32.png",
+    "48": "/src/assets/Rapid-ReSearch-icon-48.png"
   },
   "commands": {
     "_execute_action": {

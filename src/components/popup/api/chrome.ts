@@ -7,6 +7,7 @@ class ChromeMethods {
   constructor() {
     this.initChromeStorage();
   }
+
   // Create処理 //
   saveToChromeData = (data: InputSearchData[]) => {
     chrome.storage.sync.set({ data }, () => {
