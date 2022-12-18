@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAppleAlt } from '@fortawesome/free-solid-svg-icons';
+import { faApple, faWindows } from '@fortawesome/free-brands-svg-icons';
 
 const Footer: FC = () => {
   return (
@@ -13,13 +13,25 @@ const Footer: FC = () => {
       position="fixed"
       bottom="0"
       backgroundImage="linear-gradient(to right, #DECBA4, #3E5151)">
-      <Box color="white">
-        Open Shortcut Key:{' '}
-        <Box as="span" w="20px" h="20px">
-          <FontAwesomeIcon icon={faAppleAlt} />
+      <Flex>
+        <Box color="white">Open Shortcut Key: </Box>
+        <Box p="0 4px">
+          <Box as="span" color="white" w="20px" h="20px" pr="4px">
+            <FontAwesomeIcon icon={faApple} />
+          </Box>
+          <Box as="span" color="white">
+            cmd + shift + 1
+          </Box>
         </Box>
-        cmd + shift + 1
-      </Box>
+        <Box p="0 4px">
+          <Box as="span" color="white" w="20px" h="20px" pr="4px">
+            <FontAwesomeIcon icon={faWindows} />
+          </Box>
+          <Box as="span" color="white">
+            ctrl + shift + 1
+          </Box>
+        </Box>
+      </Flex>
     </Box>
   );
 };

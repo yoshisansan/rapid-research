@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, useState, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import type {
   DraggingStyle,
@@ -7,23 +7,12 @@ import type {
   DraggableStateSnapshot
 } from 'react-beautiful-dnd';
 import { css } from '@emotion/react';
-import {
-  Box,
-  FormControl,
-  FormLabel,
-  Input,
-  Flex,
-  Button,
-  Image,
-  IconButton,
-  VStack,
-  background,
-  Tabs
-} from '@chakra-ui/react';
+import { Box, FormControl, FormLabel, Input, Flex, Image, IconButton } from '@chakra-ui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faApple, faWindows } from '@fortawesome/free-brands-svg-icons';
 import { Search2Icon } from '@chakra-ui/icons';
 import Dottoggle from './Dottoggle';
 import ChromeMethods from 'components/popup/api/chrome';
-import type { InputSearchData } from '../data/searchEngine';
 
 const labelCSS = css`
   border: 0;
@@ -219,8 +208,19 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
               css={searchBtnCSS}
               icon={<Search2Icon />}
             />
-            <Box w="140px" p="8px">
-              {`cmd + ${props.index + 1}`}
+            <Box textAlign={'center'}>
+              <Box w="104px" p="1px 8px">
+                <Box as="span" pr="4px">
+                  <FontAwesomeIcon icon={faApple} />
+                </Box>
+                <Box as="span">{`cmd + ${props.index + 1}`}</Box>
+              </Box>
+              <Box w="104px" p="1px 8px">
+                <Box as="span" pr="4px">
+                  <FontAwesomeIcon icon={faWindows} />
+                </Box>
+                <Box as="span">{`ctrl + ${props.index + 1}`}</Box>
+              </Box>
             </Box>
           </Flex>
         </Box>

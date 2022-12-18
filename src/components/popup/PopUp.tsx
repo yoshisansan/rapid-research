@@ -133,7 +133,6 @@ const PopUp: FC = () => {
       if (tabId === undefined) return;
       const keyword = await getKeywordFromBrowser(tabId);
       keywordRef.current = keyword;
-      console.log(keyword, 'keyword');
       const searchEngineData = await browserMethods.setSearchEngineKeyword(keyword);
       if (searchEngineData !== undefined && searchEngineData !== null) {
         await setSearchEngines(searchEngineData);
@@ -141,18 +140,6 @@ const PopUp: FC = () => {
         setSearchEngines(browserMethods.getDefaultData());
       }
     })();
-
-    // chrome.tabs.query({ active: true, currentWindow: true }, (tabs: chrome.tabs.Tab[]) => {
-    // console.log(tabs[0].url);
-    // if(tabs.length === 0 && tabs[0].url === undefined) return;
-    // if(tabs[0].url.includes('https://www.chatwork.com')) {
-    //   alert('please go to https://www.chatwork.com')
-    //   return
-    // }
-    // console.log(tabs[0]);
-    // if (tabs[0].id === undefined) return;
-    // chrome.tabs.update(tabs[0].id, { url: `https://google.com/` });
-    // });
   }, []);
 
   return (
