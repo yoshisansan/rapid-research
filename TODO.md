@@ -6,12 +6,12 @@ Project Description
 
 ### Todo
 
-- [ ] 対象外のサイトでpopupが立ち上がらないようにする  
-- [ ] Footerにshortcutkeyを記す  
 
 ### In Progress
 
 
 ### Done ✓
 
+- [x] Footerにshortcutkeyを記す  
+- [x] 対象外のサイトでpopupが立ち上がらないようにする  
 

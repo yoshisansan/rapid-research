@@ -1,8 +1,6 @@
 // import ChromeMethods from 'components/popup/api/chrome';
 // import { InputSearchData } from 'components/popup/data/searchEngine';
 
-// console.log(message, sender);
-// sendResponse('hogehogeだよ');
 // const fetchNewData = async (): Promise<InputSearchData[] | null | undefined> => {
 //   try {
 //     if (chrome.storage.sync === undefined) return null;

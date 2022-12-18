@@ -12,13 +12,6 @@ module.exports = {
   settings: {
     'import/resolver': {
       webpack: { config: path.join(__dirname, '/webpack.config.js') }
-      // alias: {
-      //   map: [
-      //     ['@components', 'src/components'],
-      //     ['@assets', 'src/assets']
-      //   ],
-      //   extensions: ['.ts', '.js', '.json']
-      // }
     }
   },
   parser: '@typescript-eslint/parser',

@@ -97,10 +97,6 @@ type InputSearchEngine = {
 };
 
 const handleTab = async (searchEngineURL: string, inputKeyword: string) => {
-  // await chrome.tabs.create({
-  //   index: tabIdx + 1,
-  //   url: `${url}${keyword.replace(/(\s|[[:blank:]])+/g, '+')}`
-  // });
   await chrome.tabs.query(
     { active: true, currentWindow: true },
     async (tabs: chrome.tabs.Tab[]) => {
@@ -115,15 +111,6 @@ const handleTab = async (searchEngineURL: string, inputKeyword: string) => {
 };
 
 const InputSearchEngine: FC<InputSearchEngine> = (props) => {
-  // const logListener = async () => {
-  //   try {
-  //     const tabs = await chrome.tabs.query({ active: true });
-  //     console.log(tabs);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const onChagngeHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     props.handleKeyword(e.currentTarget.value);

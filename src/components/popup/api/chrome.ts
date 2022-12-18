@@ -1,8 +1,5 @@
 import DefaultData from 'components/popup/data/searchEngine';
 import type { InputSearchData } from 'components/popup/data/searchEngine';
-
-type EmptyObject = { [key: string]: never };
-
 class ChromeMethods {
   constructor() {
     this.initChromeStorage();

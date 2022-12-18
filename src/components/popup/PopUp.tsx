@@ -19,10 +19,11 @@ const Main = styled.div`
 
 const PopUp: FC = () => {
   const [searchEngines, setSearchEngines] = useState<InputSearchData[] | null>(null);
-  const [keyword, setKeyword] = useState('');
+  const [, setKeyword] = useState('');
+  const chromeMethods = new ChromeMethods();
 
+  // キーワードの更新関数
   const handleKeyword = (val: string) => {
-    // setKeyword(val);
     if (searchEngines === null) return;
     const updateValue = searchEngines.map((data) => {
       return { ...data, value: val };
@@ -30,8 +31,8 @@ const PopUp: FC = () => {
     setSearchEngines(updateValue);
     chromeMethods.saveToChromeData(updateValue);
   };
-  const chromeMethods = new ChromeMethods();
-  // ドラッグ&ドロップした要素を入れ替える
+
+  // ドラッグ&ドロップした要素を入れ替える関数
   const reorder = (
     list: InputSearchData[],
     startIndex: number,
@@ -73,6 +74,7 @@ const PopUp: FC = () => {
     return tab.id;
   };
 
+  // アクティブタブのブラウザ上でスクリプトを実行してキーワードをスクレイピングする関数
   const getKeywordFromBrowser = async (tabId: number): Promise<string | null> => {
     const res = await chrome.scripting.executeScript({
       target: { tabId },
@@ -117,6 +119,7 @@ const PopUp: FC = () => {
     return searchedKeyword;
   };
 
+  // Chrome拡張機能で保存しているデータの取り出し
   const fetchNewData = async (): Promise<string> => {
     try {
       if (chrome.storage.sync === undefined) return 'COULD_NOT_SYNC';
@@ -141,20 +144,23 @@ const PopUp: FC = () => {
 
   useEffect(() => {
     (async () => {
+      // 立ち上げ時のデータの呼び出しとキーワードの取得
       const storageKeyword = await fetchNewData();
       if (storageKeyword === 'COULD_NOT_SYNC') return;
 
       const tabId = await getBrowserId();
-      const browserMethods = new BrowserMethods();
       if (tabId === undefined) return;
 
+      // keywordがnullの場合は保存していたデータをそのまま呼び出し
       const keyword = await getKeywordFromBrowser(tabId);
       if (keyword === null) return setKeyword(storageKeyword);
 
+      // ブラウザからキーワードを取得できている場合はそちらへデータを更新
+      const browserMethods = new BrowserMethods();
       const searchEngineData = await browserMethods.setSearchEngineKeyword(keyword);
       if (searchEngineData !== undefined && searchEngineData !== null) {
+        // Popupで表示させるデータも更新
         await setSearchEngines(searchEngineData);
-      } else if (searchEngineData !== undefined && searchEngineData !== null) {
       } else {
         setSearchEngines(browserMethods.getDefaultData());
       }

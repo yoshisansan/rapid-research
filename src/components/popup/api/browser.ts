@@ -22,7 +22,6 @@ class BrowserMethods extends ChromeMethods {
   };
 
   getKeyword = (url: string): string | undefined => {
-    console.log(url);
     if (/.+:\/\/(.+)?duckduckgo\..*/.test(url)) {
       const inputElm = <HTMLInputElement>(
         Array.from(document.querySelectorAll('input[type="text"]'))[1]
