@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
 import { Box, VStack } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import Header from 'components/popup/header/Header';
@@ -19,11 +19,14 @@ const Main = styled.div`
 
 const PopUp: FC = () => {
   const [searchEngines, setSearchEngines] = useState<InputSearchData[] | null>(null);
-  const [, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState('');
+  const keywordRef = useRef('');
+  keywordRef.current = keyword;
   const chromeMethods = new ChromeMethods();
 
   // キーワードの更新関数
   const handleKeyword = (val: string) => {
+    setKeyword(val);
     if (searchEngines === null) return;
     const updateValue = searchEngines.map((data) => {
       return { ...data, value: val };
@@ -152,11 +155,12 @@ const PopUp: FC = () => {
       if (tabId === undefined) return;
 
       // keywordがnullの場合は保存していたデータをそのまま呼び出し
+      const browserMethods = new BrowserMethods();
       const keyword = await getKeywordFromBrowser(tabId);
       if (keyword === null) return setKeyword(storageKeyword);
+      setKeyword(keyword);
 
       // ブラウザからキーワードを取得できている場合はそちらへデータを更新
-      const browserMethods = new BrowserMethods();
       const searchEngineData = await browserMethods.setSearchEngineKeyword(keyword);
       if (searchEngineData !== undefined && searchEngineData !== null) {
         // Popupで表示させるデータも更新
@@ -184,7 +188,12 @@ const PopUp: FC = () => {
                     {/*　ドラッグできる要素　*/}
                     {searchEngines.map((data, i) => (
                       <React.Fragment key={data.engineName}>
-                        <InputSearchEngine {...data} handleKeyword={handleKeyword} index={i} />
+                        <InputSearchEngine
+                          {...data}
+                          keywordRef={keywordRef}
+                          handleKeyword={handleKeyword}
+                          index={i}
+                        />
                       </React.Fragment>
                     ))}
                     {provided.placeholder}

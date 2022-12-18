@@ -94,6 +94,7 @@ type InputSearchEngine = {
   value: string;
   index: number;
   handleKeyword: (val: string) => void;
+  keywordRef: React.MutableRefObject<string>;
 };
 
 const handleTab = async (searchEngineURL: string, inputKeyword: string) => {
@@ -138,7 +139,10 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
               const activeIndex = tabs[0].index;
               chrome.tabs.create({
                 index: activeIndex + 1,
-                url: `${searchEngineURL}${props.value.replace(/(\s|[[:blank:]])+/g, '+')}`
+                url: `${searchEngineURL}${props.keywordRef.current.replace(
+                  /(\s|[[:blank:]])+/g,
+                  '+'
+                )}`
               });
             }
           );
