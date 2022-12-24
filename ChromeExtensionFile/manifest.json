@@ -1,7 +1,7 @@
 {
   "name": "Rapid Re-Search",
   "description": "Add-on for seamless search between browsers",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "manifest_version": 3,
   "background": {
     "service_worker": "/background.js"
@@ -21,7 +21,9 @@
         "*://www.yandex.*/search/?text=*",
         "*://www.bing.*/search?q=*",
         "*://www.baidu.*/s?*",
-        "*://www.you.*/search?q=*"
+        "*://www.you.*/search?q=*",
+        "*://www.yahoo.*/search?*",
+        "*://www.yahoo.*.*/search?*"
       ],
       "js": ["/content.js"]
     }

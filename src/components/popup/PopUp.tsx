@@ -20,6 +20,7 @@ const Main = styled.div`
 const PopUp: FC = () => {
   const [searchEngines, setSearchEngines] = useState<InputSearchData[] | null>(null);
   const [keyword, setKeyword] = useState('');
+  // const [isEdit, setIsEdit] = useState(false);
   const keywordRef = useRef('');
   keywordRef.current = keyword;
   const chromeMethods = new ChromeMethods();

@@ -17,18 +17,18 @@ const Footer: FC = () => {
         <Box color="white">Lunch Shortcut Key: </Box>
         <Box p="0 4px">
           <Box as="span" color="white" w="20px" h="20px" pr="4px">
-            <FontAwesomeIcon icon={faApple} />
-          </Box>
-          <Box as="span" color="white">
-            cmd + shift + 1
-          </Box>
-        </Box>
-        <Box p="0 4px">
-          <Box as="span" color="white" w="20px" h="20px" pr="4px">
             <FontAwesomeIcon icon={faWindows} />
           </Box>
           <Box as="span" color="white">
             ctrl + shift + 1
+          </Box>
+        </Box>
+        <Box p="0 4px">
+          <Box as="span" color="white" w="20px" h="20px" pr="4px">
+            <FontAwesomeIcon icon={faApple} />
+          </Box>
+          <Box as="span" color="white">
+            {'\u2318'} + shift + 1
           </Box>
         </Box>
       </Flex>

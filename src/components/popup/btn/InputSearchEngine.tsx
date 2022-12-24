@@ -201,15 +201,15 @@ const InputSearchEngine: FC<InputSearchEngine> = (props) => {
             <Box textAlign={'center'}>
               <Box w="104px" p="1px 8px">
                 <Box as="span" pr="4px">
-                  <FontAwesomeIcon icon={faApple} />
-                </Box>
-                <Box as="span">{`cmd + ${props.index + 1}`}</Box>
-              </Box>
-              <Box w="104px" p="1px 8px">
-                <Box as="span" pr="4px">
                   <FontAwesomeIcon icon={faWindows} />
                 </Box>
                 <Box as="span">{`ctrl + ${props.index + 1}`}</Box>
+              </Box>
+              <Box w="104px" p="1px 8px">
+                <Box as="span" pr="4px">
+                  <FontAwesomeIcon icon={faApple} />
+                </Box>
+                <Box as="span">{`${'\u2000'}${'\u2318'}${'\u2000'}+ ${props.index + 1}`}</Box>
               </Box>
             </Box>
           </Flex>

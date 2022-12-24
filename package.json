@@ -1,10 +1,10 @@
 {
   "name": "rapic-research",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "main": "src/App.tsx",
   "license": "MIT",
   "scripts": {
-    "dev": "webpack serve && say -v Samantha 'finished'",
+    "dev": "webpack serve",
     "build": "webpack --watch",
     "start": "webpack && webpack serve",
     "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
